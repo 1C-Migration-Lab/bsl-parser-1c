@@ -48,53 +48,53 @@ import java.nio.charset.StandardCharsets;
 @State(Scope.Thread)
 public class JMXBSLLexerTest {
 
-  @Param({
-    "BSLLexer"
+    @Param({
+        "BSLLexer"
     //, "BSLLexerOld"
-  })
-  public String lexerClassName;
-  @Param({
-    "BSLParser"
+    })
+    public String lexerClassName;
+    @Param({
+        "BSLParser"
     //, "BSLParserOld"
-  })
-  public String parserClassName;
-  @Param({"file"})
-  public String parserRootASTMethodName;
+    })
+    public String parserClassName;
+    @Param({"file"})
+    public String parserRootASTMethodName;
 
-  private String content;
+    private String content;
 
-  public JMXBSLLexerTest() {
-    final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    try (InputStream inputStream = classLoader.getResourceAsStream("Module.bsl")) {
-      assert inputStream != null;
-      content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Benchmark
-  public void lexerTest()
-    throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-    var parserClass = (Class<Parser>) ClassUtils.loadClass(
-      "com.github._1c_syntax.bsl.parser." + parserClassName);
-    var parserRootASTMethod = parserClass.getMethod(parserRootASTMethodName);
-    var lexerClass = (Class<Lexer>) ClassUtils.loadClass(
-      "com.github._1c_syntax.bsl.parser." + lexerClassName);
-    var lexer = (Lexer) lexerClass.getConstructor(CharStream.class)
-      .newInstance(CharStreams.fromString(""));
-
-    var tokenizer = new Tokenizer<>(content, lexer, parserClass) {
-
-      @Override
-      protected BSLParserRuleContext rootAST() {
-        try {
-          return (BSLParserRuleContext) parserRootASTMethod.invoke(parser);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-          throw new RuntimeException("Error: ", e);
+    public JMXBSLLexerTest() {
+        final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream("Module.bsl")) {
+            assert inputStream != null;
+            content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-      }
-    };
-    tokenizer.getTokens();
-  }
+    }
+
+    @Benchmark
+    public void lexerTest()
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        var parserClass = (Class<Parser>) ClassUtils.loadClass(
+                "com.github._1c_syntax.bsl.parser." + parserClassName);
+        var parserRootASTMethod = parserClass.getMethod(parserRootASTMethodName);
+        var lexerClass = (Class<Lexer>) ClassUtils.loadClass(
+                "com.github._1c_syntax.bsl.parser." + lexerClassName);
+        var lexer = (Lexer) lexerClass.getConstructor(CharStream.class)
+                .newInstance(CharStreams.fromString(""));
+
+        var tokenizer = new Tokenizer<>(content, lexer, parserClass) {
+
+            @Override
+            protected BSLParserRuleContext rootAST() {
+                try {
+                    return (BSLParserRuleContext) parserRootASTMethod.invoke(parser);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("Error: ", e);
+                }
+            }
+        };
+        tokenizer.getTokens();
+    }
 }

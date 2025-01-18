@@ -71,3 +71,6 @@ gen/
 *.tokens
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/material_theme_project_new.xml
+
+.vscode/
+sample.txt
