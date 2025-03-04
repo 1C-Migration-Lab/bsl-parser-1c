@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.github.1c-syntax:bsl-parser:0.22.0")
+    implementation("com.github.1c-syntax:bsl-parser:v0.26.0")
     implementation("com.tunnelvisionlabs:antlr4-runtime:4.9.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     
